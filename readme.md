@@ -25,7 +25,7 @@ php composer.phar require benyazi/cmtt-php
 
 
 ```php
-$client = new \Benyazi\CmmtPhp\Api(\Benyazi\CmmtPhp\Api::TJOURNAL);
+$client = new \Benyazi\CmttPhp\Api(\Benyazi\CmttPhp\Api::TJOURNAL);
 ```
 
 Получения данных о пользователе:
