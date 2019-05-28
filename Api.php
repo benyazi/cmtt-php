@@ -1,5 +1,5 @@
 <?php
-namespace Benyazi\CmmtPhp;
+namespace Benyazi\CmttPhp;
 
 use GuzzleHttp\Client;
 
@@ -8,6 +8,11 @@ class Api
     const TJOURNAL = 'tjournal.ru';
     const DTF = 'dtf.ru';
     const VC = 'vc.ru';
+
+    const SORTING_RECENT = "recent";
+    const SORTING_POPULAR = "popular";
+    const SORTING_WEEK = "week";
+    const SORTING_MONTH = "month";
 
     protected $allowedSites = [
         self::TJOURNAL,
@@ -114,14 +119,17 @@ class Api
     /**
      * Get article list
      * @param string $category
-     * @param string $sorting
+     * @param string $sorting - "recent" "popular" "week" "month"
      * @param null|integer $count
      * @param null|integer $offset
      * @return array
      * @throws \Exception
      */
-    public function getTimeline($category, $sorting, $count = null, $offset = null)
+    public function getTimeline($category, $sorting = self::SORTING_RECENT, $count = null, $offset = null)
     {
+        if(!in_array($sorting, [self::SORTING_RECENT, self::SORTING_POPULAR, self::SORTING_WEEK, self::SORTING_MONTH])) {
+            throw new \Exception('Sorting must be "recent" or "popular" or "week" or "month"');
+        }
         $query = ['query' => []];
         if($count) {
             $query['query']['count'] = $count;
@@ -168,12 +176,15 @@ class Api
     /**
      * Get comments for article by ID
      * @param integer $id
-     * @param string $sorting
+     * @param string $sorting - "recent" "popular"
      * @return array
      * @throws \Exception
      */
-    public function getEntryComments($id, $sorting)
+    public function getEntryComments($id, $sorting = self::SORTING_RECENT)
     {
+        if(!in_array($sorting, [self::SORTING_RECENT, self::SORTING_POPULAR])) {
+            throw new \Exception('Sorting must be "recent" or "popular"');
+        }
         $data = $this->request('getEntryComments', [
             'id' => $id,
             'sorting' => $sorting,

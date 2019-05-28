@@ -28,7 +28,7 @@
   },
   "autoload": {
     "psr-4": {
-      "Benyazi\\CmmtPhp\\": ""
+      "Benyazi\\CmttPhp\\": ""
     }
   }
 }
