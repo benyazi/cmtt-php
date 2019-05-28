@@ -1,6 +1,6 @@
 {
   "name": "benyazi/cmtt-php",
-  "description": "Wrapper for cmmt API",
+  "description": "Wrapper for cmtt API",
   "type": "library",
   "keywords": [
     "tjournal.ru",

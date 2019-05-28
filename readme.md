@@ -10,13 +10,13 @@ PHP-класс для работы с api сервисами Комитета [h
 Запустите
 
 ```
-php composer.phar require benyazi/cmtt-php "~4"
+php composer.phar require benyazi/cmtt-php
 ```
 
 или добавьте
 
 ```js
-"benyazi/cmtt-php": "~4"
+"benyazi/cmtt-php": "dev-master"
 ```
 
 в секцию ```require``` вашего composer.json
