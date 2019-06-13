@@ -27,6 +27,7 @@ class Api
     private $methods = [
         'getUser' => 'user/{id}',
         'commentAdd' => 'comment/add',
+        'like' => 'like',
         'getTimeline' => 'timeline/{category}/{sorting}',
         'getTimelineByHashtag' => 'timeline/{hastag}',
         'getEntryById' => 'entry/{id}',
@@ -38,6 +39,7 @@ class Api
     ];
     private $reqMethods = [
         'commentAdd' => 'POST',
+        'like' => 'POST',
     ];
     private $client;
     private $token;
@@ -324,7 +326,7 @@ class Api
     public function sendComment($id, $text, $replyTo = null)
     {
         if(empty($this->token)) {
-            throw new \Exception('');
+            throw new \Exception('Needs token');
         }
         $formParams = [
             'id' => $id,
@@ -334,6 +336,49 @@ class Api
             $formParams['reply_to'] = $replyTo;
         }
         $data = $this->request('commentAdd', [], [
+            'headers' => [
+                'X-Device-Token' => $this->token
+            ],
+            'form_params' => $formParams
+        ]);
+        if(isset($data['result'])) {
+            return $data['result'];
+        }
+        return $data;
+    }
+
+    const SIGN_LIKE = 1;
+    const SIGN_DISLIKE = -1;
+    const SIGN_RESET = 0;
+
+    const LIKE_TYPE_CONTENT = 'content';
+    const LIKE_TYPE_COMMENT = 'comment';
+
+    /**
+     * Send like
+     * @param integer $id - Article or comment ID
+     * @param string $type - Content type: content or comment
+     * @param integer $sign -1,0,1
+     * @return array
+     * @throws \Exception
+     */
+    public function like($id, $type = self::LIKE_TYPE_CONTENT, $sign = self::SIGN_LIKE)
+    {
+        if(empty($this->token)) {
+            throw new \Exception('Needs token');
+        }
+        if(!in_array($sign, [self::SIGN_LIKE,self::SIGN_DISLIKE,self::SIGN_RESET])) {
+            throw new \Exception('Sign must be valid');
+        }
+        if(!in_array($type, [self::LIKE_TYPE_CONTENT,self::LIKE_TYPE_COMMENT])) {
+            throw new \Exception('Type must be valid');
+        }
+        $formParams = [
+            'id' => $id,
+            'type' => $type,
+            'sign' => $sign
+        ];
+        $data = $this->request('like', [], [
             'headers' => [
                 'X-Device-Token' => $this->token
             ],

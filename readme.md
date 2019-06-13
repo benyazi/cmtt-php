@@ -21,6 +21,21 @@ php composer.phar require benyazi/cmtt-php
 
 в секцию ```require``` вашего composer.json
 
+## Реализованно
+
+На данный момент реализована обертка для части функций:
+- getUser - Получить информацию о пользователе
+- getTimeline - Возвращает ленту записей
+- getTimelineByHashtag - Получить ленту записей по хэштегу
+- getEntryById - Получить запись по ID
+- getPopularEntries - Получить популярные записи для определенной записи
+- getEntryComments - Получить комментарии к записи
+- getCommentLikes - Получить список лайкнувших комментарий
+- getUserComments - Получить комментарии пользователя
+- getUserEntries - Получить записи пользователя
+- sendComment - Отправка комментария (без вложений)
+- like - Лайк, дизлайк комментария или статьи
+
 ## Использование
 
 
@@ -36,6 +51,39 @@ $userData = $client->getUser($userId);
 
 ```
 
+## Использование с токеном авторизации
+
+
+```php
+$client = new \Benyazi\CmttPhp\Api(\Benyazi\CmttPhp\Api::TJOURNAL, 'TOKEN_FOR_USER');
+```
+
+Отправка комментария:
+
+```php
+//ID статьи
+$contentId = 99328;
+//Текст комментария
+$commentText = "Раз-раз, проверка";
+$commentData = $client->sendComment($contentId, $commentText);
+
+//ID комментария, на который отправляется ответ
+$replyTo = 2472464;
+$commentText = "Раз-раз, проверка, ответа на другой комментарий";
+$commentData = $client->sendComment($contentId, $commentText, $replyTo);
+```
+
+Лайк комментария:
+
+```php
+//ID статьи или комментария
+$commentId = 2471797;
+$commentData = $client->like($commentId, \Benyazi\CmttPhp\Api::LIKE_TYPE_COMMENT);
+
+//ID статьи или комментария для дислайка
+$commentId = 2471797;
+$commentData = $client->like($commentId, \Benyazi\CmttPhp\Api::LIKE_TYPE_COMMENT, \Benyazi\CmttPhp\Api::SIGN_DISLIKE);
+```
 
 ## Автор
 
