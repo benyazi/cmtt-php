@@ -43,6 +43,7 @@ class Api
     ];
     private $client;
     private $token;
+    private $possessToken = null;
 
     public function __construct($site = self::TJOURNAL, $token = null)
     {
@@ -335,10 +336,14 @@ class Api
         if($replyTo) {
             $formParams['reply_to'] = $replyTo;
         }
+        $headers = [
+            'X-Device-Token' => $this->token
+        ];
+        if($this->possessToken) {
+            $headers['X-Device-Possession-Token'] = $this->possessToken;
+        }
         $data = $this->request('commentAdd', [], [
-            'headers' => [
-                'X-Device-Token' => $this->token
-            ],
+            'headers' => $headers,
             'form_params' => $formParams
         ]);
         if(isset($data['result'])) {
@@ -378,15 +383,52 @@ class Api
             'type' => $type,
             'sign' => $sign
         ];
+        $headers = [
+            'X-Device-Token' => $this->token
+        ];
+        if($this->possessToken) {
+            $headers['X-Device-Possession-Token'] = $this->possessToken;
+        }
         $data = $this->request('like', [], [
-            'headers' => [
-                'X-Device-Token' => $this->token
-            ],
+            'headers' => $headers,
             'form_params' => $formParams
         ]);
         if(isset($data['result'])) {
             return $data['result'];
         }
         return $data;
+    }
+
+    /**
+     * Logout from site auth
+     * @return $this
+     */
+    public function logoutPossess()
+    {
+        $this->possessToken = null;
+        return $this;
+    }
+
+    /**
+     * @param integer $siteId
+     * @throws \Exception
+     * @return $this
+     */
+    public function authPossess($siteId)
+    {
+        $data_site = $this->request('authPossess', [], [
+            'headers' => [
+                'X-Device-Token' => $this->token,
+            ],
+            'form_params' => [
+                'id' => $siteId
+            ]
+        ]);
+        if (!isset($data_site['x-device-possession-token'])
+            || count($data_site['x-device-possession-token']) < 1) {
+            throw new \Exception('Error auth by site');
+        }
+        $this->possessToken = $data_site['x-device-possession-token'][0];
+        return $this;
     }
 }

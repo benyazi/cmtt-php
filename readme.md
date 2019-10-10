@@ -85,6 +85,26 @@ $commentId = 2471797;
 $commentData = $client->like($commentId, \Benyazi\CmttPhp\Api::LIKE_TYPE_COMMENT, \Benyazi\CmttPhp\Api::SIGN_DISLIKE);
 ```
 
+## Использование вселения (авторизации из под подсайта)
+
+Лайк комментария:
+
+```php
+$client = new \Benyazi\CmttPhp\Api(\Benyazi\CmttPhp\Api::TJOURNAL, 'TOKEN_FOR_USER');
+```
+```php
+//ID статьи или комментария
+$commentId = 2471797;
+//ID site
+$siteId = 1000;
+$commentData = $client->authPossess($siteId)->like($commentId, \Benyazi\CmttPhp\Api::LIKE_TYPE_COMMENT);
+```
+
+После использования авторизации в подсайте, клиент будет помнить ее, пока не выйти из под подсайта.
+
+```php
+$client->logoutPossess();
+```
 ## Автор
 
 [Sergey Klabukov](https://github.com/benyazi/), e-mail: [yo@benyazi.ru](mailto:yo@benyazi.ru)
