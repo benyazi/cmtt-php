@@ -21,8 +21,9 @@ class Api
     ];
 
     protected $site = self::TJOURNAL;
-    protected $version = 'v1.6';
+    protected $version = 'v1.8';
     protected $endpoint = 'https://api.{SITE}/{VERSION}/';
+    private $lastResponseHeaders = null;
 
     private $methods = [
         'getUser' => 'user/{id}',
@@ -36,10 +37,12 @@ class Api
         'getCommentLikes' => 'comment/likers/{id}',
         'getUserComments' => 'user/{id}/comments',
         'getUserEntries' => 'user/{id}/entries',
+        'authPossess' => 'auth/possess',
     ];
     private $reqMethods = [
         'commentAdd' => 'POST',
         'like' => 'POST',
+        'authPossess' => 'POST',
     ];
     private $client;
     private $token;
@@ -113,6 +116,7 @@ class Api
         $response = $this->client->request($reqMethod, $url, $query);
         $statusCode = $response->getStatusCode();
         $content = $response->getBody();
+        $this->lastResponseHeaders = $response->getHeaders();
         if($statusCode == 200) {
             return json_decode($content, true);
         }
@@ -424,11 +428,11 @@ class Api
                 'id' => $siteId
             ]
         ]);
-        if (!isset($data_site['x-device-possession-token'])
-            || count($data_site['x-device-possession-token']) < 1) {
+        if (!isset($this->lastResponseHeaders['x-device-possession-token'])
+            || count($this->lastResponseHeaders['x-device-possession-token']) < 1) {
             throw new \Exception('Error auth by site');
         }
-        $this->possessToken = $data_site['x-device-possession-token'][0];
+        $this->possessToken = $this->lastResponseHeaders['x-device-possession-token'][0];
         return $this;
     }
 }
