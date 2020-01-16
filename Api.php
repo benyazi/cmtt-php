@@ -112,7 +112,12 @@ class Api
         $url = $this->getUrl();
         $reqMethod = $this->getRequestMethod($method);
         $url = $this->parseData($url, $method, $data);
-
+        if($this->token) {
+            if(!isset($query['headers'])) {
+                $query['headers'] = [];
+            }
+            $query['headers']['X-Device-Token'] = $this->token;
+        }
         $response = $this->client->request($reqMethod, $url, $query);
         $statusCode = $response->getStatusCode();
         $content = $response->getBody();
